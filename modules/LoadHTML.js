@@ -60,7 +60,7 @@ class LoadHTML {
         return new window.DOMParser().parseFromString(source, "text/html");
     }
     async getDocument(url) {
-        const response = await fetch(url);
+        const response = await axios(url);
         const data = await response.text();
         return this.toDocuemnt(data);
     }
