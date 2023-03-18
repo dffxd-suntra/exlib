@@ -66,4 +66,4 @@ class LoadHTML {
     }
 }
 
-exports = LoadHTML;
+export default LoadHTML;

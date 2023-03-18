@@ -1,6 +1,6 @@
-import config from "../config";
-import LoadHTML from "./LoadHTML";
-import checkPage from "../functions/checkPage";
+import config from "../config.js";
+import LoadHTML from "./LoadHTML.js";
+import checkPage from "../functions/checkPage.js";
 
 class PreviewPage extends LoadHTML {
     constructor(url) {
@@ -114,4 +114,4 @@ class PreviewPage extends LoadHTML {
     }
 }
 
-exports = PreviewPage;
+export default PreviewPage;

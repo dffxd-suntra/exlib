@@ -1,9 +1,9 @@
-import LoadHTML from "./modules/LoadHTML";
-import Galleries from "./modules/Galleries";
-import Gallery from "./modules/Gallery";
-import PreviewPage from "./modules/PreviewPage";
+import LoadHTML from "./modules/LoadHTML.js";
+import Galleries from "./modules/Galleries.js";
+import Gallery from "./modules/Gallery.js";
+import PreviewPage from "./modules/PreviewPage.js";
 
-exports = {
+export default {
     LoadHTML,
     Galleries,
     Gallery,

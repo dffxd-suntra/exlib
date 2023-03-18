@@ -1,6 +1,6 @@
-import config from "../config";
-import LoadHTML from "./LoadHTML";
-import checkPage from "../functions/checkPage";
+import config from "../config.js";
+import LoadHTML from "./LoadHTML.js";
+import checkPage from "../functions/checkPage.js";
 
 // 页面解析类,继承LoadHTML
 class Galleries extends LoadHTML {
@@ -182,4 +182,4 @@ class Galleries extends LoadHTML {
     }
 }
 
-exports = Galleries;
+export default Galleries;

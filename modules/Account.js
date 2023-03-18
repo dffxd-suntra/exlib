@@ -1,7 +1,7 @@
-import config from "../config";
+import config from "../config.js";
 
 class Account {
     constructor() {}
 }
 
-exports = Account;
+export default Account;

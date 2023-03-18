@@ -1,8 +1,8 @@
-import config from "../config";
-import LoadHTML from "./LoadHTML";
-import PreviewPage from "./PreviewPage";
-import checkPage from "../functions/checkPage";
-import toByte from "../functions/toByte";
+import config from "../config.js";
+import LoadHTML from "./LoadHTML.js";
+import PreviewPage from "./PreviewPage.js";
+import checkPage from "../functions/checkPage.js";
+import toByte from "../functions/toByte.js";
 
 class Gallery extends LoadHTML {
     constructor(url) {
@@ -235,4 +235,4 @@ class Gallery extends LoadHTML {
     }
 }
 
-exports = Gallery;
+export default Gallery;

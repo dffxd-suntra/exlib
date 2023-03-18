@@ -9,4 +9,4 @@ const config = {
     modeLabel: { "m": "Minimal", "p": "Minimal+", "l": "Compact", "e": "Extended", "t": "Thumbnail" }
 };
 
-exports = config;
+export default config;
