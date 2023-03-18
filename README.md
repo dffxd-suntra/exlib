@@ -1,9 +1,10 @@
 # exlib
 开发中!有稳定的版本一定会发到release里的!  
-e-hentai/exhentai 库,计划做到高中再说  
-  
-对于数据的获取有两种选择
-- 第一种: 类,通过初始化类来持续获取数据,比如有了第一页还可以进行获取下一页的操作
-- 第二种: 函数,只需与函数传参即可获取到返回的数据,对于图片的获取会慢不少
 
-我偏向于第一种,所以已经先斩后奏了
+有两种方式,为了方便油猴插件的使用
+1. esmodule
+2. rollup打包
+
+``` shell
+rollup main.js --file bundle.js --format umd --name "exlib"
+```
