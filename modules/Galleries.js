@@ -2,7 +2,7 @@ import config from "../config";
 import LoadHTML from "./LoadHTML";
 import checkPage from "../functions/checkPage";
 
-// 页面解析类,继承ParseHtml
+// 页面解析类,继承LoadHTML
 class Galleries extends LoadHTML {
     constructor(url) {
         super();
@@ -17,20 +17,47 @@ class Galleries extends LoadHTML {
             throw new Error(`您的地址不对劲: "${url}"`);
         }
 
+        // 正整数或NaN
+        this.next = parseInt(this.url.searchParams.get("next"));
+
+        // 是否初始化
+        this.inited = false;
+    }
+    getFirstPage() {
+        if (!this.inited) {
+            throw new Error(`请先初始化!`);
+        }
+        return new Galleries(this.firstPageUrl);
+    }
+    getLastPage() {
+        if (!this.inited) {
+            throw new Error(`请先初始化!`);
+        }
+        return new Galleries(this.lastPageUrl);
+    }
+    getPrevPage() {
+        if (!this.inited) {
+            throw new Error(`请先初始化!`);
+        }
+        return new Galleries(this.prevPageUrl);
+    }
+    getNextPage() {
+        if (!this.inited) {
+            throw new Error(`请先初始化!`);
+        }
+        return new Galleries(this.nextPageUrl);
+    }
+    async init() {
+        // 获取文档
+        this.pageDocuemnt = await this.getDocument(this.url.toString());
+
         // 一些网页的节点
         this.nodes = {};
 
         // 画廊的详细信息
         this.galleriesInfo = [];
 
-        // 正整数或NaN
-        this.next = parseInt(this.url.searchParams.get("next"));
-
-        // 浏览模式的标签
-        this.modeLabel = { "m": "Minimal", "p": "Minimal+", "l": "Compact", "e": "Extended", "t": "Thumbnail" };
-    }
-    // 初始化选择器的字符串
-    selectorInit() {
+        // 初始化选择器
         // 每一个页面都有的翻页
         this.selector = {
             ufirst: "#ufirst",
@@ -69,7 +96,7 @@ class Galleries extends LoadHTML {
         }
 
         // 获取浏览模式
-        this.mode = this.modeLabel[$(this.selector.mode, this.pageDocuemnt).val()];
+        this.mode = config.modeLabel[$(this.selector.mode, this.pageDocuemnt).val()];
         // 前四种本质上就是html table,解析出来会被自动添加tbody
         if (this.mode == "Minimal" || this.mode == "Minimal+") {
             this.selector.infoContainer = this.selector.container + " > table.itg.gltm";
@@ -88,16 +115,15 @@ class Galleries extends LoadHTML {
             this.selector.infoContainer = this.selector.container + " > div.itg.gld";
             this.selector.infos = this.selector.infoContainer + " > div";
         }
-    }
-    // 解析页面节点
-    parseNodes() {
+
+        // 解析页面
+        // 解析节点
         // 简单粗暴
         for (let i in this.selector) {
             this.nodes[i] = $(this.selector[i], this.pageDocuemnt);
         }
-    }
-    // 解析页面信息,根据页面节点
-    parseInfos() {
+
+        // 解析信息
         // 获取为数组形式
         let infos = this.nodes.infos.get();
         // 一个一个获取
@@ -133,7 +159,7 @@ class Galleries extends LoadHTML {
             // 收藏夹名称,不在则是空字符串
             this.galleriesInfo[i].favorite = $(infos[i]).find("#posted_" + this.galleriesInfo[i].gid).attr("title") || "";
 
-            // 大概的分数 总量5 分度值0.5
+            // 模糊分数 总量5 分度值0.5
             // https://ehgt.org/img/rt.png
             // 标签的星星为正方形,边长16,第一行离图片上边框1px,两行间隔4px,最后一行离图片下边框1px,星星之间无距离,第一个星星离图片左边框无距离,第一行最后一个星星离右边框无距离,第二行比第一行少一个星星
             // 计算星星公式: score = 5-x/16-(y==-21?0.5:0); x. y分别对应css的背景定位中的x和y,别忘了字符串转int
@@ -147,23 +173,9 @@ class Galleries extends LoadHTML {
         this.lastPageUrl = this.nodes.ulast.attr("href") || this.url.toString();
         this.prevPageUrl = this.nodes.uprev.attr("href");
         this.nextPageUrl = this.nodes.unext.attr("href");
-    }
-    parse() {
-        // 解析节点
-        this.parseNodes();
 
-        // 解析信息
-        this.parseInfos();
-    }
-    async init() {
-        // 获取文档
-        this.pageDocuemnt = await this.getDocument(this.url.toString());
-
-        // 获取解析器字符串
-        this.selectorInit();
-
-        // 解析页面
-        this.parse();
+        // 成功初始化
+        this.inited = true;
 
         return this;
     }

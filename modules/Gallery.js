@@ -1,5 +1,6 @@
 import config from "../config";
 import LoadHTML from "./LoadHTML";
+import PreviewPage from "./PreviewPage";
 import checkPage from "../functions/checkPage";
 
 class Gallery extends LoadHTML {
@@ -30,8 +31,11 @@ class Gallery extends LoadHTML {
         this.gid = temp.gid;
         this.token = temp.token;
     }
-    // 初始化选择器的字符串
-    selectorInit() {
+    async init() {
+        // 获取文档
+        this.pageDocuemnt = await this.getDocument(this.url.origin + this.url.pathname + "?hc=1");
+
+        // 获取解析器字符串
         this.selector = {
             // 没有head是因为head的东西太多了,会影响判断,而且大部分都有对应的id
             body: "#gdt",
@@ -62,16 +66,15 @@ class Gallery extends LoadHTML {
         } else {
             this.selector.preview = ".gdtm";
         }
-    }
-    // 解析页面节点
-    parseNodes() {
+
+        // 解析页面
+        // 解析节点
         // 简单粗暴*2
         for (let i in this.selector) {
             this.nodes[i] = $(this.selector[i], this.pageDocuemnt);
         }
-    }
-    // 解析页面信息
-    parseInfos() {
+
+        // 解析信息
         // 先解析画廊图片旁边显示的详细信息
         let temp1 = {};
         $("tr", this.nodes.infos).each(function (index, node) {
@@ -199,23 +202,6 @@ class Gallery extends LoadHTML {
                 postTime: timestamp.valueOf()
             });
         });
-    }
-    parse() {
-        // 解析节点
-        this.parseNodes();
-
-        // 解析信息
-        this.parseInfos();
-    }
-    async init() {
-        // 获取文档
-        this.pageDocuemnt = await this.getDocument(this.url.origin + this.url.pathname + "?hc=1");
-
-        // 获取解析器字符串
-        this.selectorInit();
-
-        // 解析页面
-        this.parse();
 
         return this;
     }
@@ -241,8 +227,7 @@ class Gallery extends LoadHTML {
 
         // 获取图片信息(如果没有存起来的话
         if (pageInfo[page - 1] == undefined && cache) {
-            pageInfo[page - 1] = new ParseImgPage(pageUrl[page - 1]);
-            await pageInfo[page - 1].init();
+            pageInfo[page - 1] = new PreviewPage(pageUrl[page - 1]);
         }
         return pageInfo[page - 1];
     }

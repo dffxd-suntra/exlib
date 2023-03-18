@@ -2,13 +2,16 @@ import config from "../config";
 
 // 获取页面类型
 function checkPage(url) {
-    if (url.constructor === String) {
+    if (url.constructor == String) {
         url = new URL(url);
     }
-    if (!config.domains.includes(url.host)) {
-        throw new Error(``);
+    if (!url || url.constructor != URL) {
+        throw new Error(`请传url字符串或URL类`);
     }
-    let pathname = url.pathname;
+
+    if (!config.domains.includes(url.host)) {
+        return -1;
+    }
     let regList = [
         // 主界面 0-14
         /^\/$/,
@@ -32,7 +35,7 @@ function checkPage(url) {
         /^\/s\/[^\/]+\/[^\/]+$/
     ];
     for (let key in regList) {
-        if (regList[key].test(pathname)) {
+        if (regList[key].test(url.pathname)) {
             return parseInt(key);
         }
     }
