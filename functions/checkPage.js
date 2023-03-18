@@ -1,4 +1,4 @@
-import config from "../config";
+import config from "../config.js";
 
 // 获取页面类型
 function checkPage(url) {
