@@ -25,99 +25,90 @@ class PreviewPage extends LoadHTML {
         let url = new URL(this.url.origin + this.url.pathname);
         url.searchParams.set("nl", this.pic.nl);
 
+        let spare = {};
+
         // 获取文档
-        let pageDocuemnt = await this.getDocument(url.toString());
+        spare.pageDocuemnt = await this.getDocument(url.toString());
 
         // 获取图片
-        let pic = $("#img", pageDocuemnt).get(0);
-
-        let picInfo = this.sparePic = {};
+        spare.pic = $("#img", spare.pageDocuemnt).get(0);
 
         // 图片链接
-        picInfo.url = $(pic).attr("src");
+        spare.url = $(spare.pic).attr("src");
 
         // 图片名称
-        picInfo.name = new URL(picInfo.url).pathname.split("/").pop();
-        if (picInfo.name == "509.gif") {
-            this.pic = {};
+        spare.name = new URL(spare.url).pathname.split("/").pop();
+        if (spare.name == "509.gif") {
             this.is509 = true;
             throw new Error(`509超限`);
         }
 
         // 图片宽度
-        picInfo.width = parseInt(pic.style.width);
+        spare.width = parseInt(spare.pic.style.width);
 
         // 图片高度
-        picInfo.height = parseInt(pic.style.height);
+        spare.height = parseInt(spare.pic.style.height);
 
-        // 完整图片链接
-        picInfo.full = this.pic.full;
-
-        // 完整宽度
-        picInfo.fullWidth = this.pic.fullWidth;
-
-        // 完整高度
-        picInfo.fullHeight = this.pic.fullHeight;
-
-        // 图片索引
-        picInfo.fileIndex = this.pic.fileIndex;
-
-        // 画廊地址
-        picInfo.galleryUrl = this.pic.galleryUrl;
+        this.spare = spare;
 
         return this;
     }
     async init() {
+        this.is509 = false;
+
+        let pic = {};
+
         // 获取文档
-        this.pageDocuemnt = await this.getDocument(this.url.origin + this.url.pathname);
+        pic.pageDocuemnt = await this.getDocument(this.url.origin + this.url.pathname);
 
         // 图片信息
         // 解析页面
-        // 当前为第几页
-        this.page = parseInt($("#i2 > div.sn > div", this.pageDocuemnt).text());
 
         // 图片节点
-        let pic = $("#img", this.pageDocuemnt).get(0);
-
-        let picInfo = this.pic = {};
+        pic.pic = $("#img", pic.pageDocuemnt).get(0);
 
         // 图片链接
-        picInfo.url = $(pic).attr("src");
+        pic.url = $(pic).attr("src");
 
         // 图片名称
-        picInfo.name = new URL(picInfo.url).pathname.split("/").pop();
-        if (picInfo.name == "509.gif") {
-            this.pic = {};
+        pic.name = new URL(pic.url).pathname.split("/").pop();
+        if (pic.name == "509.gif") {
             this.is509 = true;
             throw new Error(`509超限`);
         }
 
-        // 图片宽度
-        picInfo.width = parseInt(pic.style.width);
+        pic.width = parseInt(pic.style.width);
+        pic.height = parseInt(pic.style.height);
 
-        // 图片高度
-        picInfo.height = parseInt(pic.style.height);
-
-        // 原图链接
-        picInfo.full = $("#i7 > a", this.pageDocuemnt).attr("href") || "";
-        picInfo.fullWidth = null;
-        picInfo.fullHeight = null;
-
-        if (picInfo.full != "") {
-            // 正则表达式获取完整图片宽高
-            let temp1 = $("#i7 > a", this.pageDocuemnt).text().match(/^Download original (\d+) x (\d+) (.*) source$/);
-            picInfo.fullWidth = parseInt(temp1[1]);
-            picInfo.fullHeight = parseInt(temp1[2]);
-        }
+        this.pic = pic;
+        
+        // 当前为第几页
+        this.page = parseInt($("#i2 > div.sn > div", pic.pageDocuemnt).text());
 
         // 图片索引值
-        picInfo.fileIndex = parseInt(picInfo.url.match(/(?<=fileindex=).*(?=;xres=)/g)[0]);
+        this.fileIndex = parseInt(pic.url.match(/(?<=fileindex=).*(?=;xres=)/g)[0]);
 
         // 图片的一个奇奇怪怪的字符串,可以加载备用图片
-        picInfo.nl = $("#loadfail", this.pageDocuemnt).prop("outerHTML").match(/(?<=nl\(').*(?='\))/g)[0];
+        this.nl = $("#loadfail", pic.pageDocuemnt).prop("outerHTML").match(/(?<=nl\(').*(?='\))/g)[0];
 
         // 图片对应的画廊链接
-        picInfo.galleryUrl = $("#i5 > div > a", this.pageDocuemnt).attr("href");
+        this.galleryUrl = $("#i5 > div > a", pic.pageDocuemnt).attr("href");
+
+        // 初始化原图
+        let full = {};
+
+        full.url = $("#i7 > a", pic.pageDocuemnt).attr("href") || null;
+        full.width = null;
+        full.height = null;
+
+        if (full.url != null) {
+            // 正则表达式获取完整图片宽高
+            let temp1 = $("#i7 > a", this.pageDocuemnt).text().match(/^Download original (\d+) x (\d+) (.*) source$/);
+            full.width = parseInt(temp1[1]);
+            full.height = parseInt(temp1[2]);
+        }
+
+        this.full = full;
 
         return this;
     }

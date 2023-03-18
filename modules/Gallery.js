@@ -2,6 +2,7 @@ import config from "../config";
 import LoadHTML from "./LoadHTML";
 import PreviewPage from "./PreviewPage";
 import checkPage from "../functions/checkPage";
+import toByte from "../functions/toByte";
 
 class Gallery extends LoadHTML {
     constructor(url) {
@@ -17,6 +18,16 @@ class Gallery extends LoadHTML {
             throw new Error(`您的地址不对劲: "${url}"`);
         }
 
+        // token和gid
+        let temp = url.split("/");
+        temp.pop();
+        this.token = temp.pop();
+        this.gid = parseInt(temp.pop());
+    }
+    async init() {
+        // 获取文档
+        this.pageDocuemnt = await this.getDocument(this.url.origin + this.url.pathname + "?hc=1");
+
         // 一些网页的节点
         this.nodes = {};
 
@@ -25,15 +36,6 @@ class Gallery extends LoadHTML {
 
         // 图片页面的信息
         this.pageInfo = [];
-
-        // token和gid
-        let temp = infoUrlToTokenAndGid(url);
-        this.gid = temp.gid;
-        this.token = temp.token;
-    }
-    async init() {
-        // 获取文档
-        this.pageDocuemnt = await this.getDocument(this.url.origin + this.url.pathname + "?hc=1");
 
         // 获取解析器字符串
         this.selector = {
@@ -226,7 +228,7 @@ class Gallery extends LoadHTML {
         }
 
         // 获取图片信息(如果没有存起来的话
-        if (pageInfo[page - 1] == undefined && cache) {
+        if (pageInfo[page - 1] == undefined || !cache) {
             pageInfo[page - 1] = new PreviewPage(pageUrl[page - 1]);
         }
         return pageInfo[page - 1];

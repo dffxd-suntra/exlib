@@ -1,11 +1,11 @@
+import LoadHTML from "./modules/LoadHTML";
 import Galleries from "./modules/Galleries";
 import Gallery from "./modules/Gallery";
 import PreviewPage from "./modules/PreviewPage";
-import api from "./api";
 
 exports = {
+    LoadHTML,
     Galleries,
     Gallery,
-    PreviewPage,
-    api
+    PreviewPage
 };

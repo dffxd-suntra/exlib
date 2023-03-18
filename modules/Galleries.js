@@ -149,9 +149,10 @@ class Galleries extends LoadHTML {
             this.galleriesInfo[i].hasTorrents = $(infos[i]).find(".gldown").children("a").length != 0;
 
             // token和gid
-            let temp = infoUrlToTokenAndGid(this.galleriesInfo[i].url);
-            this.galleriesInfo[i].gid = temp.gid;
-            this.galleriesInfo[i].token = temp.token;
+            let temp = url.split("/");
+            temp.pop();
+            this.galleriesInfo[i].token = temp.pop();
+            this.galleriesInfo[i].gid = parseInt(temp.pop());
 
             // 上传时间的时间戳
             this.galleriesInfo[i].postTime = moment($(infos[i]).find("#posted_" + this.galleriesInfo[i].gid).text()).valueOf();
