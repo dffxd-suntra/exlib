@@ -14,4 +14,4 @@ function toByte(size, type) {
     return size * unit[type];
 }
 
-exports = toByte;
+export default toByte;

@@ -1,4 +1,4 @@
 function checkAccess(pageDocument) {
 }
 
-exports = checkAccess;
+export default checkAccess;

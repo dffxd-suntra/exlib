@@ -42,4 +42,4 @@ function checkPage(url) {
     return -1;
 }
 
-exports = checkPage;
+export default checkPage;
