@@ -1,4 +1,11 @@
 // api的默认配置
-const config = {};
+const config = {
+    domains: [
+        "e-hentai.org",
+        "exhentai.org",
+        "exhentai55ld2wyap5juskbm67czulomrouspdacjamjeloj7ugjbsad.onion"
+    ],
+    ehgt: "ehgt.org",
+};
 
 exports = config;

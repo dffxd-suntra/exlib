@@ -1,5 +1,6 @@
+import config from "../config";
 import LoadHTML from "./LoadHTML";
-import getPageType from "../functions/getPageType";
+import checkPage from "../functions/checkPage";
 
 class Gallery extends LoadHTML {
     constructor(url) {
@@ -8,7 +9,7 @@ class Gallery extends LoadHTML {
         this.url = new URL(url);
 
         // 页面的种类
-        this.pageType = getPageType(this.url);
+        this.pageType = checkPage(this.url);
 
         // 判断合法性
         if (this.pageType != 15) {

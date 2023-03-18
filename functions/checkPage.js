@@ -1,7 +1,12 @@
+import config from "../config";
+
 // 获取页面类型
-function getPageType(url) {
+function checkPage(url) {
     if (url.constructor === String) {
         url = new URL(url);
+    }
+    if (!config.domains.includes(url.host)) {
+        throw new Error(``);
     }
     let pathname = url.pathname;
     let regList = [
@@ -34,4 +39,4 @@ function getPageType(url) {
     return -1;
 }
 
-exports = getPageType;
+exports = checkPage;

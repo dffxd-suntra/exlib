@@ -1,5 +1,6 @@
+import config from "../config";
 import LoadHTML from "./LoadHTML";
-import getPageType from "../functions/getPageType";
+import checkPage from "../functions/checkPage";
 
 // 页面解析类,继承ParseHtml
 class Galleries extends LoadHTML {
@@ -9,7 +10,7 @@ class Galleries extends LoadHTML {
         this.url = new URL(url);
 
         // 页面的种类
-        this.pageType = getPageType(this.url);
+        this.pageType = checkPage(this.url);
 
         // 判断合法性
         if (this.pageType == -1 || 14 < this.pageType) {
@@ -20,7 +21,7 @@ class Galleries extends LoadHTML {
         this.nodes = {};
 
         // 画廊的详细信息
-        this.galleryInfo = [];
+        this.galleriesInfo = [];
 
         // 正整数或NaN
         this.next = parseInt(this.url.searchParams.get("next"));
@@ -101,36 +102,36 @@ class Galleries extends LoadHTML {
         let infos = this.nodes.infos.get();
         // 一个一个获取
         for (let i in infos) {
-            this.galleryInfo[i] = {};
+            this.galleriesInfo[i] = {};
 
             // 名称
-            this.galleryInfo[i].name = $(infos[i]).find(".glink").text();
+            this.galleriesInfo[i].name = $(infos[i]).find(".glink").text();
 
             // 链接
-            this.galleryInfo[i].url = $(infos[i]).find(".glink").parent("a[href]").attr("href");
+            this.galleriesInfo[i].url = $(infos[i]).find(".glink").parent("a[href]").attr("href");
 
             // 种类
-            this.galleryInfo[i].categories = $(infos[i]).find(".cs").text();
+            this.galleriesInfo[i].categories = $(infos[i]).find(".cs").text();
 
             // 封面链接
-            this.galleryInfo[i].cover = $(infos[i]).find(`img[alt="${this.galleryInfo[i].name}"]`).attr("src");
+            this.galleriesInfo[i].cover = $(infos[i]).find(`img[alt="${this.galleriesInfo[i].name}"]`).attr("src");
 
             // 页数
-            this.galleryInfo[i].pages = parseInt($($(infos[i]).find(":contains('pages')").get().find(node => /^\d+(?= pages$)/g.test($(node).text()) && !$(node).hasClass("glink") && $(node).find(".glink").length == 0)).text());
+            this.galleriesInfo[i].pages = parseInt($($(infos[i]).find(":contains('pages')").get().find(node => /^\d+(?= pages$)/g.test($(node).text()) && !$(node).hasClass("glink") && $(node).find(".glink").length == 0)).text());
 
             // 是否有种子
-            this.galleryInfo[i].hasTorrents = $(infos[i]).find(".gldown").children("a").length != 0;
+            this.galleriesInfo[i].hasTorrents = $(infos[i]).find(".gldown").children("a").length != 0;
 
             // token和gid
-            let temp = infoUrlToTokenAndGid(this.galleryInfo[i].url);
-            this.galleryInfo[i].gid = temp.gid;
-            this.galleryInfo[i].token = temp.token;
+            let temp = infoUrlToTokenAndGid(this.galleriesInfo[i].url);
+            this.galleriesInfo[i].gid = temp.gid;
+            this.galleriesInfo[i].token = temp.token;
 
             // 上传时间的时间戳
-            this.galleryInfo[i].postTime = moment($(infos[i]).find("#posted_" + this.galleryInfo[i].gid).text()).valueOf();
+            this.galleriesInfo[i].postTime = moment($(infos[i]).find("#posted_" + this.galleriesInfo[i].gid).text()).valueOf();
 
             // 收藏夹名称,不在则是空字符串
-            this.galleryInfo[i].favorite = $(infos[i]).find("#posted_" + this.galleryInfo[i].gid).attr("title") || "";
+            this.galleriesInfo[i].favorite = $(infos[i]).find("#posted_" + this.galleriesInfo[i].gid).attr("title") || "";
 
             // 大概的分数 总量5 分度值0.5
             // https://ehgt.org/img/rt.png
@@ -138,7 +139,7 @@ class Galleries extends LoadHTML {
             // 计算星星公式: score = 5-x/16-(y==-21?0.5:0); x. y分别对应css的背景定位中的x和y,别忘了字符串转int
             let [x, y] = $(infos[i]).find("div.ir").get(0).style.backgroundPosition.match(/-?\d+(?=px)/g);
 
-            this.galleryInfo[i].fuzzyRating = 5 - Math.abs(parseInt(x)) / 16 - (parseInt(y) == -21 ? 0.5 : 0);
+            this.galleriesInfo[i].fuzzyRating = 5 - Math.abs(parseInt(x)) / 16 - (parseInt(y) == -21 ? 0.5 : 0);
         }
 
         // 第一页 最后一页 下一页 上一页 的链接
