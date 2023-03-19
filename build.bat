@@ -1,0 +1,1 @@
+rollup ./src/main.js --file ./dist/bundle.js --format umd --name "exlib"
