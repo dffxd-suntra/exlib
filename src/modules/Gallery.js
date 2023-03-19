@@ -4,7 +4,7 @@ import PreviewPage from "./PreviewPage.js";
 import checkPage from "../functions/checkPage.js";
 import toByte from "../functions/toByte.js";
 
-class Gallery extends LoadHTML {
+export default class Gallery extends LoadHTML {
     constructor(url) {
         super();
         // 初始化链接
@@ -241,5 +241,3 @@ class Gallery extends LoadHTML {
         return pageInfo[page - 1];
     }
 }
-
-export default Gallery;

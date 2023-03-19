@@ -1,4 +1,4 @@
-function toByte(size, type) {
+export default function toByte(size, type) {
     if (!type) {
         [size, type] = size;
     }
@@ -13,5 +13,3 @@ function toByte(size, type) {
     };
     return size * unit[type];
 }
-
-export default toByte;

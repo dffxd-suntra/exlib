@@ -2,7 +2,7 @@ import config from "../config.js";
 import LoadHTML from "./LoadHTML.js";
 import checkPage from "../functions/checkPage.js";
 
-class PreviewPage extends LoadHTML {
+export default class PreviewPage extends LoadHTML {
     constructor(url) {
         super();
         // 初始化链接
@@ -164,5 +164,3 @@ class PreviewPage extends LoadHTML {
         return this;
     }
 }
-
-export default PreviewPage;

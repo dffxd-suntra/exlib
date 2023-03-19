@@ -3,7 +3,7 @@ import LoadHTML from "./LoadHTML.js";
 import checkPage from "../functions/checkPage.js";
 
 // 页面解析类,继承LoadHTML
-class Galleries extends LoadHTML {
+export default class Galleries extends LoadHTML {
     constructor(url) {
         super();
         // 初始化链接
@@ -199,5 +199,3 @@ class Galleries extends LoadHTML {
         return this;
     }
 }
-
-export default Galleries;

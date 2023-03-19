@@ -1,7 +1,7 @@
 import config from "../config.js";
 
 // 获取页面类型
-function checkPage(url) {
+export default function checkPage(url) {
     if (url.constructor == String) {
         url = new URL(url);
     }
@@ -41,5 +41,3 @@ function checkPage(url) {
     }
     return -1;
 }
-
-export default checkPage;
