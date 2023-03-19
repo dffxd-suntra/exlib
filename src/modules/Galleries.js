@@ -1,6 +1,7 @@
 import config from "../config.js";
 import LoadHTML from "./LoadHTML.js";
 import checkPage from "../functions/checkPage.js";
+import htmlEncode from "../functions/htmlEncode.js";
 
 // 页面解析类,继承LoadHTML
 export default class Galleries extends LoadHTML {
@@ -157,11 +158,13 @@ export default class Galleries extends LoadHTML {
             // 种类
             this.galleriesInfo[i].categories = $(infos[i]).find(".cs").text();
 
+            debugger
             // 封面链接
-            this.galleriesInfo[i].cover = $(infos[i]).find(`img[alt="${this.galleriesInfo[i].name}"]`).attr("src");
+            this.galleriesInfo[i].cover = $(infos[i]).find(`img[alt="${htmlEncode(this.galleriesInfo[i].name)}"]`).attr("src");
 
             // 页数
-            this.galleriesInfo[i].pages = parseInt($($(infos[i]).find(":contains('pages')").get().find(node => /^\d+(?= pages$)/g.test($(node).text()) && !$(node).hasClass("glink") && $(node).find(".glink").length == 0)).text());
+            // this.galleriesInfo[i].pages = parseInt($($(infos[i]).find(":contains('pages')").get().find(node => /^\d+(?= pages$)/g.test($(node).text()) && !$(node).hasClass("glink") && $(node).find(".glink").length == 0)).text());
+            this.galleriesInfo[i].pages = $($(infos[i]).find("img").get().find(node => /^\/t\/.*$/g.test(new URL($(node).attr("src")).pathname))).attr("src")
 
             // 是否有种子
             this.galleriesInfo[i].hasTorrents = $(infos[i]).find(".gldown").children("a").length != 0;

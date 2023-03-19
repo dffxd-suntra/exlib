@@ -15,6 +15,10 @@
                 console.error(response);
                 throw new Error("网页获取错误");
             }
+            if (/^Your IP address has been temporarily banned for excessive pageloads which indicates that you are using automated mirroring\/harvesting software. The ban expires in \d* hours and \d* minutes$/g.test(response.data)) {
+                console.error(response);
+                throw new Error("你的ip被ban了");
+            }
             return this.toDocuemnt(response.data);
         }
     }
@@ -70,6 +74,17 @@
             }
         }
         return -1;
+    }
+
+    function htmlEncode(str) {
+        if (str.length == 0) return "";
+        str = str.replace(/&/g, "&amp;");
+        str = str.replace(/</g, "&lt;");
+        str = str.replace(/>/g, "&gt;");
+        str = str.replace(/ /g, "&nbsp;");
+        str = str.replace(/\'/g, "&#39;");
+        str = str.replace(/\"/g, "&quot;");
+        return str;
     }
 
     // 页面解析类,继承LoadHTML
@@ -227,11 +242,13 @@
                 // 种类
                 this.galleriesInfo[i].categories = $(infos[i]).find(".cs").text();
 
+                debugger
                 // 封面链接
-                this.galleriesInfo[i].cover = $(infos[i]).find(`img[alt="${this.galleriesInfo[i].name}"]`).attr("src");
+                this.galleriesInfo[i].cover = $(infos[i]).find(`img[alt="${htmlEncode(this.galleriesInfo[i].name)}"]`).attr("src");
 
                 // 页数
-                this.galleriesInfo[i].pages = parseInt($($(infos[i]).find(":contains('pages')").get().find(node => /^\d+(?= pages$)/g.test($(node).text()) && !$(node).hasClass("glink") && $(node).find(".glink").length == 0)).text());
+                // this.galleriesInfo[i].pages = parseInt($($(infos[i]).find(":contains('pages')").get().find(node => /^\d+(?= pages$)/g.test($(node).text()) && !$(node).hasClass("glink") && $(node).find(".glink").length == 0)).text());
+                this.galleriesInfo[i].pages = $($(infos[i]).find("img").get().find(node => /^\/t\/.*$/g.test(new URL($(node).attr("src")).pathname))).attr("src");
 
                 // 是否有种子
                 this.galleriesInfo[i].hasTorrents = $(infos[i]).find(".gldown").children("a").length != 0;

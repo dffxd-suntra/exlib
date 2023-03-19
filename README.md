@@ -6,3 +6,8 @@
 2. 下载dist下使用rollup打包的包  
   
 前提条件: 引入lib下的jquery,axios和moment.js库,也可自行下载 
+
+## Todo:
+- 适配收藏夹系统
+- 错误处理系统
+- 自定义设置系统
