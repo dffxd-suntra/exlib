@@ -340,11 +340,53 @@
                 throw new Error(`您的地址不对劲: "${url}"`);
             }
 
+            this.inited = false;
+
             // 检查是否被屏蔽
             this.is509 = false;
         }
+        getFirstPage() {
+            if (!this.inited) {
+                throw new Error(`请先初始化!`);
+            }
+            return new PreviewPage(this.firstPageUrl);
+        }
+        getLastPage() {
+            if (!this.inited) {
+                throw new Error(`请先初始化!`);
+            }
+            return new PreviewPage(this.lastPageUrl);
+        }
+        getPrevPage() {
+            if (!this.inited) {
+                throw new Error(`请先初始化!`);
+            }
+            return new PreviewPage(this.prevPageUrl);
+        }
+        getNextPage() {
+            if (!this.inited) {
+                throw new Error(`请先初始化!`);
+            }
+            return new PreviewPage(this.nextPageUrl);
+        }
+        isFirstPage() {
+            if (!this.inited) {
+                throw new Error(`请先初始化!`);
+            }
+            return this.firstPageUrl == this.url.toString();
+        }
+        isLastPage() {
+            if (!this.inited) {
+                throw new Error(`请先初始化!`);
+            }
+            return this.lastPageUrl == this.url.toString();
+        }
         // 获取备用图片(从exhentai自己的图床里调,会消耗积分?
         async loadSpare() {
+            if (!this.inited) {
+                throw new Error(`请先初始化!`);
+            }
+            
             // 获取备用图片的页面地址
             let url = new URL(this.url.origin + this.url.pathname);
             url.searchParams.set("nl", this.pic.nl);
@@ -415,6 +457,13 @@
             // 图片的一个奇奇怪怪的字符串,可以加载备用图片
             this.nl = $("#loadfail", pic.pageDocuemnt).prop("outerHTML").match(/(?<=nl\(').*(?='\))/g)[0];
 
+            // 页连接
+            let temp = $("#i2 > div.sn > a").get();
+            this.firstPageUrl = $(temp[0]).attr("href");
+            this.prevPageUrl = $(temp[1]).attr("href");
+            this.nextPageUrl = $(temp[2]).attr("href");
+            this.lastPageUrl = $(temp[3]).attr("href");
+
             // 图片对应的画廊链接
             this.galleryUrl = $("#i5 > div > a", pic.pageDocuemnt).attr("href");
 
@@ -433,6 +482,8 @@
             }
 
             this.full = full;
+
+            this.inited = true;
 
             return this;
         }
