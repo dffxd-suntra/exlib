@@ -68,7 +68,7 @@ class PreviewPage extends LoadHTML {
         pic.pic = $("#img", pic.pageDocuemnt).get(0);
 
         // 图片链接
-        pic.url = $(pic).attr("src");
+        pic.url = $(pic.pic).attr("src");
 
         // 图片名称
         pic.name = new URL(pic.url).pathname.split("/").pop();
@@ -77,8 +77,8 @@ class PreviewPage extends LoadHTML {
             throw new Error(`509超限`);
         }
 
-        pic.width = parseInt(pic.style.width);
-        pic.height = parseInt(pic.style.height);
+        pic.width = parseInt(pic.pic.style.width);
+        pic.height = parseInt(pic.pic.style.height);
 
         this.pic = pic;
         
@@ -103,7 +103,7 @@ class PreviewPage extends LoadHTML {
 
         if (full.url != null) {
             // 正则表达式获取完整图片宽高
-            let temp1 = $("#i7 > a", this.pageDocuemnt).text().match(/^Download original (\d+) x (\d+) (.*) source$/);
+            let temp1 = $("#i7 > a", pic.pageDocuemnt).text().match(/^Download original (\d+) x (\d+) (.*) source$/);
             full.width = parseInt(temp1[1]);
             full.height = parseInt(temp1[2]);
         }

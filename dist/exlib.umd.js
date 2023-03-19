@@ -67,8 +67,11 @@
         }
         async getDocument(url) {
             const response = await axios(url);
-            const data = await response.text();
-            return this.toDocuemnt(data);
+            if (response.data == "" || response.status != 200) {
+                console.error(response);
+                throw new Error("网页获取错误");
+            }
+            return this.toDocuemnt(response.data);
         }
     }
 
@@ -141,7 +144,7 @@
             }
 
             // 正整数或NaN
-            this.next = parseInt(this.url.searchParams.get("next"));
+            this.next = parseInt(this.url.searchParams.get("next")) || null;
 
             // 是否初始化
             this.inited = false;
@@ -162,13 +165,31 @@
             if (!this.inited) {
                 throw new Error(`请先初始化!`);
             }
+            if (this.prevPageUrl == null) {
+                return false;
+            }
             return new Galleries(this.prevPageUrl);
         }
         getNextPage() {
             if (!this.inited) {
                 throw new Error(`请先初始化!`);
             }
+            if (this.nextPageUrl == null) {
+                return false;
+            }
             return new Galleries(this.nextPageUrl);
+        }
+        isFirstPage() {
+            if (!this.inited) {
+                throw new Error(`请先初始化!`);
+            }
+            return this.firstPageUrl == this.url.toString();
+        }
+        isLastPage() {
+            if (!this.inited) {
+                throw new Error(`请先初始化!`);
+            }
+            return this.lastPageUrl == this.url.toString();
         }
         async init() {
             // 获取文档
@@ -272,7 +293,7 @@
                 this.galleriesInfo[i].hasTorrents = $(infos[i]).find(".gldown").children("a").length != 0;
 
                 // token和gid
-                let temp = url.split("/");
+                let temp = this.galleriesInfo[i].url.split("/");
                 temp.pop();
                 this.galleriesInfo[i].token = temp.pop();
                 this.galleriesInfo[i].gid = parseInt(temp.pop());
@@ -295,8 +316,8 @@
             // 第一页 最后一页 下一页 上一页 的链接
             this.firstPageUrl = this.nodes.ufirst.attr("href") || this.url.toString();
             this.lastPageUrl = this.nodes.ulast.attr("href") || this.url.toString();
-            this.prevPageUrl = this.nodes.uprev.attr("href");
-            this.nextPageUrl = this.nodes.unext.attr("href");
+            this.prevPageUrl = this.nodes.uprev.attr("href") || null;
+            this.nextPageUrl = this.nodes.unext.attr("href") || null;
 
             // 成功初始化
             this.inited = true;
@@ -371,7 +392,7 @@
             pic.pic = $("#img", pic.pageDocuemnt).get(0);
 
             // 图片链接
-            pic.url = $(pic).attr("src");
+            pic.url = $(pic.pic).attr("src");
 
             // 图片名称
             pic.name = new URL(pic.url).pathname.split("/").pop();
@@ -380,8 +401,8 @@
                 throw new Error(`509超限`);
             }
 
-            pic.width = parseInt(pic.style.width);
-            pic.height = parseInt(pic.style.height);
+            pic.width = parseInt(pic.pic.style.width);
+            pic.height = parseInt(pic.pic.style.height);
 
             this.pic = pic;
             
@@ -406,7 +427,7 @@
 
             if (full.url != null) {
                 // 正则表达式获取完整图片宽高
-                let temp1 = $("#i7 > a", this.pageDocuemnt).text().match(/^Download original (\d+) x (\d+) (.*) source$/);
+                let temp1 = $("#i7 > a", pic.pageDocuemnt).text().match(/^Download original (\d+) x (\d+) (.*) source$/);
                 full.width = parseInt(temp1[1]);
                 full.height = parseInt(temp1[2]);
             }
@@ -446,6 +467,8 @@
             if (this.pageType != 15) {
                 throw new Error(`您的地址不对劲: "${url}"`);
             }
+
+            this.inited = false;
 
             // token和gid
             let temp = url.split("/");
@@ -634,10 +657,15 @@
                 });
             });
 
+            this.inited = true;
+
             return this;
         }
         // 获取图片页面信息
         async get(page, cache = true) {
+            if (!this.inited) {
+                throw new Error(`请先初始化!`);
+            }
             // 检测范围
             if (page < 1 || this.pages < page) {
                 throw new Error(`输入的正确的范围1-${this.pages}`);

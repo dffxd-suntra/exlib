@@ -18,7 +18,7 @@ class Galleries extends LoadHTML {
         }
 
         // 正整数或NaN
-        this.next = parseInt(this.url.searchParams.get("next"));
+        this.next = parseInt(this.url.searchParams.get("next")) || null;
 
         // 是否初始化
         this.inited = false;
@@ -39,13 +39,31 @@ class Galleries extends LoadHTML {
         if (!this.inited) {
             throw new Error(`请先初始化!`);
         }
+        if (this.prevPageUrl == null) {
+            return false;
+        }
         return new Galleries(this.prevPageUrl);
     }
     getNextPage() {
         if (!this.inited) {
             throw new Error(`请先初始化!`);
         }
+        if (this.nextPageUrl == null) {
+            return false;
+        }
         return new Galleries(this.nextPageUrl);
+    }
+    isFirstPage() {
+        if (!this.inited) {
+            throw new Error(`请先初始化!`);
+        }
+        return this.firstPageUrl == this.url.toString();
+    }
+    isLastPage() {
+        if (!this.inited) {
+            throw new Error(`请先初始化!`);
+        }
+        return this.lastPageUrl == this.url.toString();
     }
     async init() {
         // 获取文档
@@ -149,7 +167,7 @@ class Galleries extends LoadHTML {
             this.galleriesInfo[i].hasTorrents = $(infos[i]).find(".gldown").children("a").length != 0;
 
             // token和gid
-            let temp = url.split("/");
+            let temp = this.galleriesInfo[i].url.split("/");
             temp.pop();
             this.galleriesInfo[i].token = temp.pop();
             this.galleriesInfo[i].gid = parseInt(temp.pop());
@@ -172,8 +190,8 @@ class Galleries extends LoadHTML {
         // 第一页 最后一页 下一页 上一页 的链接
         this.firstPageUrl = this.nodes.ufirst.attr("href") || this.url.toString();
         this.lastPageUrl = this.nodes.ulast.attr("href") || this.url.toString();
-        this.prevPageUrl = this.nodes.uprev.attr("href");
-        this.nextPageUrl = this.nodes.unext.attr("href");
+        this.prevPageUrl = this.nodes.uprev.attr("href") || null;
+        this.nextPageUrl = this.nodes.unext.attr("href") || null;
 
         // 成功初始化
         this.inited = true;

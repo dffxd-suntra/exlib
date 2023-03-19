@@ -18,6 +18,8 @@ class Gallery extends LoadHTML {
             throw new Error(`您的地址不对劲: "${url}"`);
         }
 
+        this.inited = false;
+
         // token和gid
         let temp = url.split("/");
         temp.pop();
@@ -205,10 +207,15 @@ class Gallery extends LoadHTML {
             });
         });
 
+        this.inited = true;
+
         return this;
     }
     // 获取图片页面信息
     async get(page, cache = true) {
+        if (!this.inited) {
+            throw new Error(`请先初始化!`);
+        }
         // 检测范围
         if (page < 1 || this.pages < page) {
             throw new Error(`输入的正确的范围1-${this.pages}`);

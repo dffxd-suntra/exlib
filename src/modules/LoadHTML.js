@@ -61,8 +61,11 @@ class LoadHTML {
     }
     async getDocument(url) {
         const response = await axios(url);
-        const data = await response.text();
-        return this.toDocuemnt(data);
+        if (response.data == "" || response.status != 200) {
+            console.error(response);
+            throw new Error("网页获取错误");
+        }
+        return this.toDocuemnt(response.data);
     }
 }
 
