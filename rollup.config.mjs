@@ -10,7 +10,7 @@ export default {
     input: pkgInfo.main,
     output: {
         name: "Exlib",
-        file: "dist/exlib.js",
+        file: "dist/exlib.min.js",
         format: "umd"
     },
     plugins: [
