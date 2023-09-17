@@ -129,7 +129,7 @@ export class Galleries extends EXJquery {
         this.selector.thumbnail.infoContainer = this.selector.container + " > div.itg.gld";
         this.selector.thumbnail.infos = this.selector.thumbnail.infoContainer + " > div";
     }
-    async getGalleries(cache: boolean = true) {
+    async getGalleries(cache: boolean = true): Promise<{ [key: string]: any; }[]> {
         const $ = await this.loadDocument({ cache });
 
         let galleries: { [key: number]: any }[] = [];
@@ -244,7 +244,7 @@ export class Gallery extends EXJquery {
             large: { preview: ".gdtm" }
         };
     }
-    async getInfos() {
+    async getInfos(): Promise<{ [key: string]: any }> {
         let $ = await this.loadDocument();
 
         let infos: { [key: string]: any } = {};
@@ -363,7 +363,7 @@ export class Gallery extends EXJquery {
 
         return infos;
     }
-    async getPageUrl(pages: number) {
+    async getPageUrl(pages: number): Promise<string> {
         let infos = await this.getInfos();
         if (pages < 1 || infos.pages < pages) {
             throw new Error("fuck you! you page range wrong!");
@@ -404,12 +404,17 @@ export class Preview extends EXJquery {
             fullImage: "#i7 > a"
         };
     }
-    async getPic() {
+    async getPic(): Promise<{ [key: string]: any; }> {
         let $ = await this.loadDocument();
 
         let pic: { [key: string]: any } = {};
 
         pic.url = new URL($(this.selector.image).attr("src"), this.url).href;
+        pic.name = pic.url.split("/").pop();
+        if (pic.name == "509.gif") {
+            this.is509 = true;
+            throw new Error(`509超限`);
+        }
         let sp = new URL(pic.url).pathname.split("/");
         if (sp[1] == "om") {
             // 从源服务器获取
@@ -423,7 +428,7 @@ export class Preview extends EXJquery {
 
         return pic;
     }
-    async getFullPic() {
+    async getFullPic(): Promise<{ [key: string]: any; } | null> {
         let $ = await this.loadDocument();
 
         let pic: { [key: string]: any } = {};
